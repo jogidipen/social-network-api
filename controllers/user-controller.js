@@ -99,7 +99,10 @@ const userController = {
       res.status(200).json(dbUserData);
     })
     .catch(e => { console.log(e); res.status(500).json(e) });
-  }
+  },
+  //add friend method
+
+  //delete friend method
 };
 
 module.exports = userController;
