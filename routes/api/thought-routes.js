@@ -15,28 +15,30 @@ router.route('/')
 .get(getAllThoughts);
 
 //GET a thought by thought id
+// /api/thoughts/:id
 router.route('/:id')
 .get(getThoughtById);
 
-// POST create a thought by userId
-// /api/thoughts/<userId>/
-router.route('/:userId')
+// POST create a thought to a userId
+// /api/thoughts/users/<userId>/
+router.route('/users/:userId')
 .post(addThought);
+
+//delete a thought
+// /api/thoughts/<id>/users/<userId>
+router.route('/:id/users/:userId')
+.delete(deleteThought);
 
 //add a reaction
 //update a thought
-// /api/thoughts/<userId>/<thoughtId>/<reactionId>
-router.route('/:userId/:thoughtId/:reactionId')
+// /api/thoughts/<id>/users/<userId>/reactions/<reactionId>
+router.route('/:id/users/:userId/reactions/:reactionId')
 .post(addReaction);
 
-//delete a thought
-// /api/thoughts/<userId/<thoughtId>
-router.route('/:userId/:thoughtId')
-.delete(deleteThought);
-
 //delete a reaction
-// /api/thoughts/<userId>/<thoughtId>/<reactionId>
-router.route('/:userId/:thoughtId/:reactionId')
+//update a thought
+// /api/thoughts/<id>/users/<userId>/reactions/<reactionId>
+router.route('/:id/users/:userId/reactions/:reactionId')
 .delete(deleteReaction);
 
 module.exports = router;

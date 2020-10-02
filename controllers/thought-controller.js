@@ -9,7 +9,7 @@ const thoughtController = {
     Thought.find({})
     .populate(
       {
-        path: 'users',
+        path: 'user',
         select: '-__v'
       }
     )
@@ -25,13 +25,12 @@ const thoughtController = {
     Thought.findOne
     (
       {
-        _id: params.id
+        _id: req.params.id
       }
     )
     .populate(
       {
-        path: 'users',
-        select: '-__v'
+        path: 'user',
       }
     )
     .select('-__v')
@@ -39,7 +38,9 @@ const thoughtController = {
       if (!dbThoughtData) {
         return res.status(404).json({message: `no thought found with the id of ${req.params.id}`})
       }
+      res.status(200).json(dbThoughtData);
     })
+    .catch(e => { console.log(e); res.status(500).json(e); });
   },
   //add a thought
   addThought(req, res) {
@@ -47,14 +48,17 @@ const thoughtController = {
     console.log("\x1b[33m", "client request to add a thought", "\x1b[00m");
     console.log(``);
     console.log(req.body);
+    let thoughtDataLocal;
     Thought.create(req.body)
-    .then(({ _id }) => {
-      console.log(_id);
+    .then((thoughtData) => {//place the thought with the user id in the params
+      thoughtDataLocal = thoughtData;
+      console.log(thoughtData._id);
+      console.log(thoughtData);
       //update the user with the new thought
       return User.findOneAndUpdate
       (
         { _id: req.params.userId },
-        { $push: { thoughts: _id } },
+        { $push: { thoughts: thoughtData } },
         {
           new: true,
           runValidators: true
@@ -69,11 +73,35 @@ const thoughtController = {
       .select('-__v')
     })
     .then(dbUserData => {
+      console.log("\x1b[33m", "checking thoughtDataLocal", "\x1b[00m");
+      console.log(thoughtDataLocal);
+      console.log("\x1b[33m", "checking dbUserData", "\x1b[00m");
       console.log(dbUserData);
+      console.log(dbUserData.username);
       if(!dbUserData) {
-        return res.status(404).json({message: `no user or thought found with the id of ${req.params.userId}`});
+        return res.status(404).json({message: `no user found with the id of ${req.params.userId}`});
       }
-      res.status(200).json(dbUserData);
+      return Thought.findOneAndUpdate
+      (
+        { _id: thoughtDataLocal._id },
+        { $push: { user: dbUserData._id } },
+        { new: true }
+      )
+      .populate(
+        {
+          path: 'user',
+          select: '-__v'
+        }
+      )
+      .select('-__v')
+    })
+    .then(thoughtData2 => {
+      console.log("\x1b[33m", "checking thoughtData2", "\x1b[00m");
+      console.log(thoughtData2);
+      if(!thoughtData2) {
+        res.status(404).json({message: `could not find the thought with the id of ${thoughtDataLocal._id}`});
+      }
+      res.status(200).json(thoughtData2);
     })
     .catch(err => console.log(err));
   },
@@ -86,22 +114,20 @@ const thoughtController = {
     Thought.findOneAndDelete
     (
       {
-        _id: params.thoughtId
+        _id: req.params.id
       }
     )
-    then(dbThoughtData => {
-      if (!dbThoughtData) {
-        return res.status(404).json({message: `no thought found with the id of ${req.params.thoughtId}`})
-      }
-      //update the user without the deleted thought
+    .then(() => {
+      //update user that had this thought id
       return User.findOneAndUpdate
       (
-        { _id: params.userId },
-        { $pull: { thoughts: params.thoughtId } },
+        { _id: req.params.userId },
+        { $pull: { thoughts: req.params.id } },//delete thought from the user
         { new: true }
       )
       .populate(
         {
+          path: 'friends',
           path: 'thoughts',
           select: '-__v'
         }
@@ -111,7 +137,7 @@ const thoughtController = {
     .then(dbUserData => {
       console.log(dbUserData);
       if (!dbUserData) {
-        return res.status(404).json({message: `no user found with the id of ${params.userId}`});
+        return res.status(404).json({message: `no user found with the id of ${req.params.userId}`});
       }
       res.status(200).json(dbUserData);
     })

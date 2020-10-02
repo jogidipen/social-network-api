@@ -5,16 +5,21 @@ const moment = require('moment');
 const UserSchema = new Schema
 (
   {
+    // userId: {//creating custom id to avoid confusion with parent comment id
+    //   type: Schema.Types.ObjectId,
+    //   default: () => new Types.ObjectId()
+    // },
     username: {
       type: String,
       unique: [true, 'username must not match one already created'],
-      required: [true, 'username is required'],
+      required: 'username is required',
       trim: true
     },
     email: {
       type: String,
       unique: [true, 'email must not match one already created'], 
       required: [ true, 'email is required' ],
+      //match: regex here
       validate: {
         validator: (email) => {
           return /.+@.+\..+/i.test(email);
@@ -49,7 +54,14 @@ UserSchema.virtual('friendCount')
   console.log(this.friends);
   console.log(this.friends.length);
   return this.friends.length;
-})
+});
+
+UserSchema.virtual('thoughtCount')
+.get(function() {
+  console.log(this.thoughts);
+  console.log(this.thoughts.length);
+  return this.thoughts.length;
+});
 
 const User = model('User', UserSchema);
 
