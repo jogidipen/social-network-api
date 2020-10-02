@@ -12,8 +12,9 @@ const userController = {
     .populate(
       {
         path: 'thoughts',
-        select: '-__v',
-      }
+        path: 'friends',
+        select: '-__v'
+      },
     )
     .select('-__v')
     .then(dbUserData => res.json(dbUserData))
@@ -66,7 +67,7 @@ const userController = {
     User.findOneAndUpdate
     (
       { _id: req.params.id },
-      body,
+      req.body,
       {
         new: true,
         runValidators: true
@@ -101,8 +102,47 @@ const userController = {
     .catch(e => { console.log(e); res.status(500).json(e) });
   },
   //add friend method
+  //like an update method
+  addFriend(req, res) {
+    console.log(``);
+    console.log("\x1b[33m", "client request to add a friend", "\x1b[00m");
+    console.log(``);
+    console.log(req.params);
+    User.findOneAndUpdate
+    (
+      { _id: req.params.id },
+      { $push: { friends: req.params.friendId } },//parameter containing friendId
+      { new: true }
+    )
+    .then(dbUserData => {
+      if (!dbUserData) {
+        res.status(404).json({message: `no user found with the id of ${req.params.id}`});
+      }
+      res.status(200).json(dbUserData);
+    })
+    .catch(e => { console.log(e); res.status(500).json(e); });
+  },
 
   //delete friend method
+  deleteFriend(req, res) {
+    console.log(``);
+    console.log("\x1b[33m", "client request to add a friend", "\x1b[00m");
+    console.log(``);
+    console.log(req.params);
+    User.findOneAndUpdate
+    (
+      { _id: req.params.id },
+      { $pull: { friends: req.params.friendId } },
+      { new: true }
+    )
+    .then(dbUserData => {
+      if (!dbUserData) {
+        res.status(404).json({message: `no user found with the id of ${req.params.id}`});
+      }
+      res.status(200).json(dbUserData);
+    })
+    .catch(e => { console.log(e); res.status(500).json(e); });
+  }
 };
 
 module.exports = userController;
