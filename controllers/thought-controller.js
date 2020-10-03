@@ -7,12 +7,6 @@ const thoughtController = {
     console.log("\x1b[33m", "client request to get all thoughts", "\x1b[00m");
     console.log(``);
     Thought.find()
-    // .populate(
-    //   {
-    //     path: 'user',
-    //     select: ['-__v', '-email']
-    //   }
-    // )
     .select('-__v')
     .then(dbThoughtData => res.status(200).json(dbThoughtData))
     .catch(e => { console.log(e); res.status(500).json(e); });
@@ -117,6 +111,13 @@ const thoughtController = {
           new: true,
         }
       )
+      .populate(
+        {
+          path: 'thoughts',
+          select: '-__v'
+        }
+      )
+      .select('-__v')
     })
     .then(user => {
       if (!user) {
@@ -212,8 +213,8 @@ const thoughtController = {
     console.log(req.params);
     Thought.findOneAndUpdate
     (
-      { _id: params.thoughtId },
-      { $pull: { thoughts: { reactionId: params.reactionId } } },
+      { _id: req.params.id },
+      { $pull: { reactions: { reactionId: req.params.reactionId } } },
       { new: true }
     )
     .then(dbThoughtData => {
@@ -224,6 +225,47 @@ const thoughtController = {
       res.status(200).json(dbThoughtData);
     })
     .catch(e => { console.log(e); res.status(500).json(e); });
+  },
+  updateReaction: async (req, res) => {
+    console.log(``);
+    console.log("\x1b[33m", "client request to update a reaction to a thought", "\x1b[00m");
+    console.log(``);
+    console.log(req.params);
+    console.log(req.body);
+    //find the thought and delete the old reaction on this thought
+    try {
+      const deletedReaction = await Thought.findOneAndUpdate
+      (
+        { _id: req.params.id },
+        { 
+          $pull: {
+            reactions: {
+              reactionId: req.params.reactionId
+            }
+          }
+        },
+        { new: true } 
+      );
+      console.log(deletedReaction);
+      if (!deletedReaction) {
+        res.status(404).json({message: `no thought found with the id of ${req.params.id} or no reaction found with the id of ${req.params.reactionId}`});
+      }
+      //update the thought with the new reaction
+      const newReaction = await Thought.findOneAndUpdate
+      (
+        { _id: req.params.id },
+        {
+          $push: {
+            reactions: req.body
+          }
+        },
+        { new: true }
+      );
+      console.log(newReaction);
+      res.status(200).json(newReaction);
+    } catch (error) {
+      console.log(error); res.status(500).json(error);
+    }
   }
 };
 

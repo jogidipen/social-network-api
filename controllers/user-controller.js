@@ -9,14 +9,19 @@ const userController = {
     console.log(``);
     console.log("\x1b[33m", "request path", "\x1b[00m");
     console.log(req.path);
-    User.find({})
-    .populate(
-      {
-        path: 'thoughts',
-        path: 'friends',
-        select: '-__v'
-      },
-    )
+    User.find()
+    // .populate(
+    //   {
+    //     path: 'thoughts',
+    //     select: '-__v'
+    //   },
+    // )
+    // .populate(
+    //   {
+    //     path: 'friends',
+    //     select: '-__v'
+    //   }
+    // )
     .select('-__v')
     .then(dbUserData => res.json(dbUserData))
     .catch(e => { console.log(e); res.status(500).json(e) });
@@ -36,6 +41,12 @@ const userController = {
     .populate(
       {
         path: 'thoughts',
+        select: '-__v'
+      },
+    )
+    .populate(
+      {
+        path: 'friends',
         select: '-__v'
       }
     )

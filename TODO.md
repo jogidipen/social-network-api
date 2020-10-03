@@ -14,6 +14,6 @@ WHEN I test API GET, POST, PUT, and DELETE routes in Insomnia Core
 THEN 
   * I am able to successfully 
     - create, DONE users, DONE thoughts, DONE reactions, friends
-    - get, DONE users, DONE thoughts, DONE reactions, friends
-    - update, DONE users, DONE thoughts, reactions, friends
-    - delete, DONE users, DONE thoughts, reactions, friends
+    - get, DONE users, DONE thoughts, (single user has both populated schemas of thoughts and friends), (all users have only the thoughtId's, and friendId's, with the counts displayed for thoughts and friends )
+    - update, DONE users, DONE thoughts, DONE reactions, 
+    - delete, DONE users, DONE thoughts, DONE reactions, friends

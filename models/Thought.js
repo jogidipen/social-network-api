@@ -33,14 +33,6 @@ const ReactionSchema = new Schema
   }
 )
 
-// const s = new Schema({
-//   userId: ObjectId,
-//   username: {
-//     type: String,
-//     required: function() { return this.userId != null; }
-//   }
-// })
-
 const ThoughtSchema = new Schema
 (
   {
