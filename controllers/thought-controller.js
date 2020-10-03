@@ -6,13 +6,13 @@ const thoughtController = {
     console.log(``);
     console.log("\x1b[33m", "client request to get all thoughts", "\x1b[00m");
     console.log(``);
-    Thought.find({})
-    .populate(
-      {
-        path: 'user',
-        select: '-__v'
-      }
-    )
+    Thought.find()
+    // .populate(
+    //   {
+    //     path: 'user',
+    //     select: ['-__v', '-email']
+    //   }
+    // )
     .select('-__v')
     .then(dbThoughtData => res.status(200).json(dbThoughtData))
     .catch(e => { console.log(e); res.status(500).json(e); });
@@ -43,67 +43,94 @@ const thoughtController = {
     .catch(e => { console.log(e); res.status(500).json(e); });
   },
   //add a thought
+  // addThought(req, res) {
+  //   console.log(``);
+  //   console.log("\x1b[33m", "client request to add a thought", "\x1b[00m");
+  //   console.log(``);
+  //   console.log(req.body);
+  //   let thoughtDataLocal;
+  //   Thought.create(req.body)
+  //   .then((thoughtData) => {//place the thought with the user id in the params
+  //     thoughtDataLocal = thoughtData;
+  //     console.log(thoughtData._id);
+  //     console.log(thoughtData);
+  //     //update the user with the new thought
+  //     return User.findOneAndUpdate
+  //     (
+  //       { _id: req.body.userId },
+  //       { $push: { thoughts: thoughtData._id } },
+  //       {
+  //         new: true,
+  //         runValidators: true
+  //       }
+  //     )
+  //     .populate(
+  //       {
+  //         path: 'thoughts',
+  //         select: '-__v'
+  //       }
+  //     )
+  //     .select('-__v')
+  //   })
+  //   .then(dbUserData => {
+  //     console.log("\x1b[33m", "checking thoughtDataLocal", "\x1b[00m");
+  //     console.log(thoughtDataLocal);
+  //     console.log("\x1b[33m", "checking dbUserData", "\x1b[00m");
+  //     console.log(dbUserData);
+  //     console.log(dbUserData.username);
+  //     if(!dbUserData) {
+  //       return res.status(404).json({message: `no user found with the id of ${req.params.userId}`});
+  //     }
+  //     return Thought.findOneAndUpdate
+  //     (
+  //       { _id: thoughtDataLocal._id },
+  //       { $push: { user: dbUserData._id } },
+  //       { new: true }
+  //     )
+  //     .populate(
+  //       {
+  //         path: 'user',
+  //         select: '-__v'
+  //       }
+  //     )
+  //     .select('-__v')
+  //   })
+  //   .then(thoughtData2 => {
+  //     console.log("\x1b[33m", "checking thoughtData2", "\x1b[00m");
+  //     console.log(thoughtData2);
+  //     if(!thoughtData2) {
+  //       res.status(404).json({message: `could not find the thought with the id of ${thoughtDataLocal._id}`});
+  //     }
+  //     res.status(200).json(thoughtData2);
+  //   })
+  //   .catch(err => console.log(err));
+  // },
   addThought(req, res) {
-    console.log(``);
-    console.log("\x1b[33m", "client request to add a thought", "\x1b[00m");
-    console.log(``);
-    console.log(req.body);
-    let thoughtDataLocal;
+    //find user first to get the username
     Thought.create(req.body)
-    .then((thoughtData) => {//place the thought with the user id in the params
-      thoughtDataLocal = thoughtData;
-      console.log(thoughtData._id);
-      console.log(thoughtData);
-      //update the user with the new thought
+    .then(thought => {
       return User.findOneAndUpdate
       (
-        { _id: req.params.userId },
-        { $push: { thoughts: thoughtData } },
+        {
+          _id: req.body.userId
+        },
+        { $push: { thoughts: thought._id } },
         {
           new: true,
-          runValidators: true
         }
       )
-      .populate(
-        {
-          path: 'thoughts',
-          select: '-__v'
-        }
-      )
-      .select('-__v')
+      // .populate(
+      //   {
+      //     path: 'thoughts',
+      //     select: '-__v'
+      //   }
+      // )
+      // .select('-__v')
+    }).
+    then(user => {
+      res.json(user);
     })
-    .then(dbUserData => {
-      console.log("\x1b[33m", "checking thoughtDataLocal", "\x1b[00m");
-      console.log(thoughtDataLocal);
-      console.log("\x1b[33m", "checking dbUserData", "\x1b[00m");
-      console.log(dbUserData);
-      console.log(dbUserData.username);
-      if(!dbUserData) {
-        return res.status(404).json({message: `no user found with the id of ${req.params.userId}`});
-      }
-      return Thought.findOneAndUpdate
-      (
-        { _id: thoughtDataLocal._id },
-        { $push: { user: dbUserData._id } },
-        { new: true }
-      )
-      .populate(
-        {
-          path: 'user',
-          select: '-__v'
-        }
-      )
-      .select('-__v')
-    })
-    .then(thoughtData2 => {
-      console.log("\x1b[33m", "checking thoughtData2", "\x1b[00m");
-      console.log(thoughtData2);
-      if(!thoughtData2) {
-        res.status(404).json({message: `could not find the thought with the id of ${thoughtDataLocal._id}`});
-      }
-      res.status(200).json(thoughtData2);
-    })
-    .catch(err => console.log(err));
+    .catch(e => { console.log(e); res.status(500).json(thought); });
   },
   //delete a thought
   deleteThought(req, res) {
