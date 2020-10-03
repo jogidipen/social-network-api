@@ -33,6 +33,13 @@ const ReactionSchema = new Schema
   }
 )
 
+// const s = new Schema({
+//   userId: ObjectId,
+//   username: {
+//     type: String,
+//     required: function() { return this.userId != null; }
+//   }
+// })
 
 const ThoughtSchema = new Schema
 (
@@ -49,12 +56,9 @@ const ThoughtSchema = new Schema
       get: (createdAtVal) => moment(createdAtVal).format('MMM DD, YYYY [at] hh:mm a')
     },
     reactions: [ReactionSchema],
-    user: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-      }
-    ]
+    user: {
+      type: String
+    }
   },
   {
     toJSON: {
@@ -72,11 +76,11 @@ ThoughtSchema.virtual('reactionCount')
   return this.reactions.length;
 });
 
-ThoughtSchema.virtual('username')
-.get(function(){
-  console.log(this.user[0].username);
-  return this.user[0].username;
-})
+// ThoughtSchema.virtual('username')
+// .get(function(){
+//   console.log(this.user[0].username);
+//   return this.user[0].username;
+// })
 
 
 const Thought = model('Thought', ThoughtSchema);

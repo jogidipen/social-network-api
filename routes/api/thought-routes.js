@@ -10,9 +10,11 @@ const {
 } = require('../../controllers/thought-controller.js');
 
 //GET all thoughts
+//POST a thought include userId in the body
 // /api/thoughts
 router.route('/')
-.get(getAllThoughts);
+.get(getAllThoughts)
+.post(addThought);
 
 //GET a thought by thought id
 // /api/thoughts/:id
@@ -21,8 +23,8 @@ router.route('/:id')
 
 // POST create a thought to a userId
 // /api/thoughts/users/<userId>/
-router.route('/users/:userId')
-.post(addThought);
+// router.route('/users/:userId')
+// .post(addThought);
 
 //delete a thought
 // /api/thoughts/<id>/users/<userId>
