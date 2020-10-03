@@ -6,25 +6,14 @@ SO THAT my website can handle large amounts of unstructured data
 ## Acceptance Criteria
 
 GIVEN a social network API
-WHEN I enter the command to invoke the application
-THEN 
-  * my server is started 
-  * and the Mongoose models are synced to the MongoDB database
-WHEN I open API GET routes in Insomnia Core for users and thoughts
-THEN 
-  * the data for each of these routes is displayed in a formatted JSON
-WHEN I test API POST, PUT, and DELETE routes in Insomnia Core
+DONE WHEN I enter the command to invoke the application
+DONE THEN 
+  * DONE my server is started 
+  * DONE and the Mongoose models are synced to the MongoDB database
+WHEN I test API GET, POST, PUT, and DELETE routes in Insomnia Core
 THEN 
   * I am able to successfully 
-    - create, 
-    - update, and 
-    - delete users and 
-    - thoughts in my database
-WHEN I test API POST and DELETE routes in Insomnia Core
-THEN 
-  * I am able to successfully 
-  * create and 
-  * delete reactions to thoughts
-  * And 
-    - add and 
-    - remove friends to a user’s friend list
+    - create, DONE users, DONE thoughts, DONE reactions, friends
+    - get, DONE users, DONE thoughts, DONE reactions, friends
+    - update, DONE users, DONE thoughts, reactions, friends
+    - delete, DONE users, DONE thoughts, reactions, friends

@@ -28,11 +28,6 @@ const thoughtController = {
         _id: req.params.id
       }
     )
-    .populate(
-      {
-        path: 'user',
-      }
-    )
     .select('-__v')
     .then(dbThoughtData => {
       if (!dbThoughtData) {
@@ -106,6 +101,9 @@ const thoughtController = {
   //   .catch(err => console.log(err));
   // },
   addThought(req, res) {
+    console.log(``);
+    console.log("\x1b[33m", "client request to create a thought", "\x1b[00m");
+    console.log(``);
     //find user first to get the username
     Thought.create(req.body)
     .then(thought => {
@@ -119,18 +117,14 @@ const thoughtController = {
           new: true,
         }
       )
-      // .populate(
-      //   {
-      //     path: 'thoughts',
-      //     select: '-__v'
-      //   }
-      // )
-      // .select('-__v')
-    }).
-    then(user => {
-      res.json(user);
     })
-    .catch(e => { console.log(e); res.status(500).json(thought); });
+    .then(user => {
+      if (!user) {
+        res.status(404).json({message: `no user found with the id of ${req.body.userId}`});
+      }
+      res.status(200).json(user);
+    })
+    .catch(e => { console.log(e); res.status(500).json(e); });
   },
   //delete a thought
   deleteThought(req, res) {
@@ -138,39 +132,57 @@ const thoughtController = {
     console.log("\x1b[33m", "client request to delete a thought", "\x1b[00m");
     console.log(``);
     console.log(req.params);
+    //delete the thought
     Thought.findOneAndDelete
     (
       {
         _id: req.params.id
       }
     )
-    .then(() => {
-      //update user that had this thought id
+    .then(thought => {
+      console.log(thought);
+      if (!thought) {
+        return res.status(404).json({message: `no thought found with the id of ${req.params.id}`});
+      }
+      //then delete the thought from the user collection
       return User.findOneAndUpdate
       (
         { _id: req.params.userId },
-        { $pull: { thoughts: req.params.id } },//delete thought from the user
+        { $pull: {thoughts: req.params.id} },
         { new: true }
-      )
-      .populate(
-        {
-          path: 'friends',
-          path: 'thoughts',
-          select: '-__v'
-        }
-      )
-      .select('-__v')
+      );
     })
-    .then(dbUserData => {
-      console.log(dbUserData);
-      if (!dbUserData) {
-        return res.status(404).json({message: `no user found with the id of ${req.params.userId}`});
+    .then(userInfo => {
+      if (!userInfo) {
+        res.status(404).json({message: `no user found with the id of ${req.params.userId}`});
       }
-      res.status(200).json(dbUserData);
+      res.status(200).json({message: `thought id of ${req.params.id} has been deleted from the user with the id of ${req.params.userId}`});
     })
-    .catch(e => { console.log(e); res.json(e); });
+    .catch(e => { console.log(e); res.status(500).json(e); });
+  },
+  updateThought: async (req, res) => {
+    console.log(``);
+    console.log("\x1b[33m", "client request to update a thought by thought id", "\x1b[00m");
+    console.log(``);
+    try {
+      const thoughtInfo = await Thought.findOneAndUpdate
+      (
+        { _id: req.params.id },
+        req.body,
+        { new: true }
+      );
+      console.log(thoughtInfo);
+      if (!thoughtInfo) {
+        res.status(404).json({message: `no thought found with the id of ${req.params.id}`})
+      }
+      res.status(200).json(thoughtInfo);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
   },
   //add reaction to a thought
+  // reaction needs a reactionBody and username in post request body
   addReaction(req, res) {
     console.log(``);
     console.log("\x1b[33m", "client request to add a react to a thought", "\x1b[00m");
@@ -179,7 +191,7 @@ const thoughtController = {
     console.log(req.body);
     Thought.findOneAndUpdate
     (
-      { _id: params.thoughtId },
+      { _id: req.params.id },
       { $push: { reactions: req.body } },
       { new: true }
     )
