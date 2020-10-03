@@ -51,6 +51,7 @@ const UserSchema = new Schema
 //friend count virtual
 UserSchema.virtual('friendCount')
 .get(function() {
+  console.log("\x1b[33m", "checking user friends list", "\x1b[00m");
   console.log(this.friends);
   console.log(this.friends.length);
   return this.friends.length;
@@ -58,6 +59,7 @@ UserSchema.virtual('friendCount')
 
 UserSchema.virtual('thoughtCount')
 .get(function() {
+  console.log("\x1b[33m", "checking user thought list", "\x1b[00m");
   console.log(this.thoughts);
   console.log(this.thoughts.length);
   return this.thoughts.length;

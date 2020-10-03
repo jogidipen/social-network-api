@@ -1,4 +1,5 @@
-const { User } = require('../models');
+const { User, Thought } = require('../models');
+const db = require('../models');
 
 const userController = {
   //get all users
@@ -82,24 +83,33 @@ const userController = {
     .catch(e => { console.log(e); res.status(500).json(e) });
   },
   //delete a user
-  deleteUser(req, res) {
+  deleteUser: async (req, res) => {
     console.log(``);
     console.log("\x1b[33m", "client request to delete a user", "\x1b[00m");
     console.log(``);
+    console.log(req.body)
     console.log(req.params);
-    User.findOneAndDelete
-    (
-      {
-        _id: req.params.id
-      }
-    )
-    .then(dbUserData => {
-      if (!dbUserData) {
+    try {
+      // find and delete all those thoughts that match with the username in the req.body 
+      const deletedThoughts = await Thought.deleteMany
+      (
+        { user: req.body.user }
+      );
+      console.log(deletedThoughts);
+      //delete the user
+      const deletedUser = await User.findOneAndDelete
+      (
+        { _id: req.params.id }
+      );
+      console.log(deletedUser);
+      if (!deletedUser) {
         res.status(404).json({message: `no user found with the id of ${req.params.id}`});
       }
-      res.status(200).json(dbUserData);
-    })
-    .catch(e => { console.log(e); res.status(500).json(e) });
+      res.status(200).json({message: `user with id ${req.params.id} and their thoughts have been deleted.`});
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
   },
   //add friend method
   //like an update method
