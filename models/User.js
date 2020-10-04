@@ -22,9 +22,9 @@ const UserSchema = new Schema
       //match: regex here
       validate: {
         validator: (email) => {
-          return /.+@.+\..+/i.test(email);
+          return /[a-zA-z0-9]+@.+\..+/i.test(email);
         },
-        message: props => `${props.value} is not a valid email address format.`
+        message: props => `${props.value} is not a valid email address format. Should be similar to 'example2@mail.com' and contain only english letters and/or numbers`
       }
     },
     thoughts: [
