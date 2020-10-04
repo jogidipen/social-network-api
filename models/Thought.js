@@ -12,12 +12,16 @@ const ReactionSchema = new Schema
     },
     reactionBody: {
       type: String,
-      required: [true, 'reaction body must be required'],
+      required: [true, 'reactionBody within the request is required with a reaction'],
       maxlength: 280
     },
     username: {
       type: String,
-      required: [true, 'username is required with a reaction']
+      required: [true, 'username within the request is required with a reaction']
+    },  
+    userId: {
+      type: String,
+      required: 'userId is required within this request'
     },
     createdAt: {
       type: Date,
@@ -38,7 +42,7 @@ const ThoughtSchema = new Schema
   {
     thoughtText: {
       type: String,
-      required: [true, 'A thought entry is required'],
+      required: [true, 'thoughtText is required in this request'],
       minlength: 1,
       maxlength: 280
     },
@@ -48,8 +52,13 @@ const ThoughtSchema = new Schema
       get: (createdAtVal) => moment(createdAtVal).format('MMM DD, YYYY [at] hh:mm a')
     },
     reactions: [ReactionSchema],
-    user: {
-      type: String
+    username: {
+      type: String,
+      required: 'A username is required for this thought creation'
+    },
+    userId: {
+      type: String,
+      required: [true, 'userId is required for this thought creation']
     }
   },
   {
@@ -67,13 +76,6 @@ ThoughtSchema.virtual('reactionCount')
 .get(function() {
   return this.reactions.length;
 });
-
-// ThoughtSchema.virtual('username')
-// .get(function(){
-//   console.log(this.user[0].username);
-//   return this.user[0].username;
-// })
-
 
 const Thought = model('Thought', ThoughtSchema);
 

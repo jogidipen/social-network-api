@@ -98,9 +98,18 @@ const thoughtController = {
     console.log(``);
     console.log("\x1b[33m", "client request to create a thought", "\x1b[00m");
     console.log(``);
+    let thoughtLocal;
     //find user first to get the username
-    Thought.create(req.body)
+    Thought.create(
+      {
+        thoughtText: req.body.thoughtText,
+        username: req.body.username,
+        userId: req.body.userId
+      }
+    )
     .then(thought => {
+      thoughtLocal = thought;
+      console.log("\x1b[33m", "thought which was just created", "\x1b[00m");
       return User.findOneAndUpdate
       (
         {
@@ -123,7 +132,7 @@ const thoughtController = {
       if (!user) {
         res.status(404).json({message: `no user found with the id of ${req.body.userId}`});
       }
-      res.status(200).json(user);
+      res.status(200).json(user); 
     })
     .catch(e => { console.log(e); res.status(500).json(e); });
   },
