@@ -38,11 +38,17 @@ const UserSchema = new Schema
         type: Schema.Types.ObjectId,
         ref: 'User'
       }
-    ]
+    ],
+    memberSince: {
+      type: Date,
+      default: Date.now,
+      get: memberSinceVal => moment(memberSinceVal).format('MMM DD YYYY')
+    }
   },
   {
     toJSON: {
-      virtuals: true
+      virtuals: true,
+      getters: true
     },
     id: false
   }
@@ -57,6 +63,7 @@ UserSchema.virtual('friendCount')
   return this.friends.length;
 });
 
+//thought count virtual
 UserSchema.virtual('thoughtCount')
 .get(function() {
   console.log("\x1b[33m", "checking user thought list", "\x1b[00m");
