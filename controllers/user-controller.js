@@ -104,9 +104,23 @@ const userController = {
       // find and delete all those thoughts that match with the username in the req.body 
       const deletedThoughts = await Thought.deleteMany
       (
-        { user: req.body.user }
+        { username: req.body.username }
       );
       console.log(deletedThoughts);
+      //find all users that have this user on deck for deletion in their friends list
+      // and update the queried users' friendslists to not include the deleted user's id
+      const deletedFriend = await User.updateMany
+      (
+        //get all users
+        {},
+        //pull friend Id from all users that have that friend id in their friends array
+        {
+          $pull: {
+            friends: req.params.id
+          }
+        }
+      );
+      console.log(deletedFriend);
       //delete the user
       const deletedUser = await User.findOneAndDelete
       (
@@ -116,7 +130,7 @@ const userController = {
       if (!deletedUser) {
         res.status(404).json({message: `no user found with the id of ${req.params.id}`});
       }
-      res.status(200).json({message: `user with id ${req.params.id} and their thoughts have been deleted.`});
+      res.status(200).json({message: `the user ${req.body.username} and their thoughts have been deleted.`});
     } catch (error) {
       console.log(error);
       res.status(500).json(error);
