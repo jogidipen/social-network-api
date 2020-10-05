@@ -27,7 +27,7 @@
   1. ```$ git clone <```ssh or https link```>``` (clone this repository to your local machine)
   2. ```$ cd <```this repo```>``` (change working directory to this repo)
   3. ```$ npm install``` (get all dependencies needed for the project to run)
-  4. ```$ mongod``` (command to type in the console to start the mongoDB server on your local machine)
+  4. ```$ mongod``` (shell command to type in your bash environment to start the mongoDB server on your local machine)
   5. ```$ mongo``` (check to see if the database can be connected to)
   6. Open Insomnia Core or your choice of API route testing software.
   7. Query Database.
@@ -36,8 +36,8 @@
   ## Usage
 
   ### Video
-  coming soon to 
-  [![You: Tube](https://img.shields.io/badge/You-Tube-ff0000.svg)]() 
+  * 👇 Install walk-through instruction video on YouTube!
+  * [![You: Tube](https://img.shields.io/badge/You-Tube-ff0000.svg)](https://www.youtube.com/watch?v=XLe-dR5OKs8&feature=youtu.be) 
 
   ## Credits
 
